@@ -3485,6 +3485,7 @@ var $;
             if (!plugin?.text())
                 return;
             event.preventDefault();
+            plugin.select();
             plugin.copy();
         }
         static plugin() {
@@ -3501,6 +3502,9 @@ var $;
         auto() {
             $bog_selection.listener();
             $bog_selection.hosts.set(this.dom_node(), this);
+        }
+        select() {
+            this.$.$mol_dom_context.document.getSelection()?.selectAllChildren(this.dom_node());
         }
         copy() {
             return this.$.$mol_dom_context.navigator.clipboard.writeText(this.text());

@@ -1606,6 +1606,7 @@ declare namespace $ {
         static keydown(event: KeyboardEvent): void;
         static plugin(): $bog_selection | null | undefined;
         auto(): void;
+        select(): void;
         copy(): Promise<void>;
     }
 }
