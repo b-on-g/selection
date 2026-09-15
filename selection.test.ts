@@ -22,8 +22,10 @@ namespace $ {
 		'Ctrl+A around the caret copies the owner source text'( $ ) {
 
 			const doc = $.$mol_dom_context.document
+			const navigator = $.$mol_dom_context.navigator
 			const written = [] as string[]
-			Object.defineProperty( $.$mol_dom_context.navigator, 'clipboard', {
+			const clipboard = Object.getOwnPropertyDescriptor( navigator, 'clipboard' )
+			Object.defineProperty( navigator, 'clipboard', {
 				value: { writeText: ( text: string )=> { written.push( text ) } },
 				configurable: true,
 			})
@@ -31,9 +33,7 @@ namespace $ {
 			const row = ()=> [ $mol_view.make({ $, sub: ()=> [ 'row' ] }) ]
 			const host = $bog_selection_test_host.make({ $, rows: row, text: ()=> 'source' })
 			const empty = $bog_selection_test_host.make({ $, rows: row })
-			doc.body.appendChild( host.dom_tree() )
-			doc.body.appendChild( empty.dom_tree() )
-			const outside = doc.body.appendChild( doc.createElement( 'p' ) )
+			const outside = doc.createElement( 'p' )
 			outside.textContent = 'outside'
 
 			const press = ()=> {
@@ -42,20 +42,35 @@ namespace $ {
 				return event.defaultPrevented
 			}
 
-			doc.getSelection()!.collapse( outside.firstChild, 0 )
-			$mol_assert_equal( press(), false )
+			try {
 
-			doc.getSelection()!.collapse( host.dom_node().firstChild, 0 )
-			$mol_assert_equal( press(), true )
-			$mol_assert_equal( written, [ 'source' ] )
+				doc.body.appendChild( host.dom_tree() )
+				doc.body.appendChild( empty.dom_tree() )
+				doc.body.appendChild( outside )
 
-			doc.getSelection()!.collapse( empty.dom_node().firstChild, 0 )
-			$mol_assert_equal( press(), false )
-			$mol_assert_equal( written, [ 'source' ] )
+				doc.getSelection()!.collapse( outside.firstChild, 0 )
+				$mol_assert_equal( press(), false )
 
-			host.destructor()
-			empty.destructor()
-			doc.body.innerHTML = ''
+				doc.getSelection()!.collapse( host.dom_node().firstChild, 0 )
+				$mol_assert_equal( press(), true )
+				$mol_assert_equal( written, [ 'source' ] )
+
+				doc.getSelection()!.collapse( empty.dom_node().firstChild, 0 )
+				$mol_assert_equal( press(), false )
+				$mol_assert_equal( written, [ 'source' ] )
+
+			} finally {
+
+				doc.getSelection()!.removeAllRanges()
+				host.dom_node().remove()
+				empty.dom_node().remove()
+				outside.remove()
+				host.destructor()
+				empty.destructor()
+				if( clipboard ) Object.defineProperty( navigator, 'clipboard', clipboard )
+				else delete ( navigator as any ).clipboard
+
+			}
 		},
 
 	})
