@@ -4709,7 +4709,7 @@ declare namespace $ {
 declare namespace $ {
 
 	type $mol_paragraph__title_bog_selection_demo_1 = $mol_type_enforce<
-		string
+		ReturnType< $bog_selection_demo['hint_text'] >
 		,
 		ReturnType< $mol_paragraph['title'] >
 	>
@@ -4759,6 +4759,7 @@ declare namespace $ {
 		ReturnType< $mol_paragraph['title'] >
 	>
 	export class $bog_selection_demo extends $mol_page {
+		hint_text( ): string
 		Hint( ): $mol_paragraph
 		article( ): string
 		Article_selection( ): $bog_selection
@@ -4780,6 +4781,8 @@ declare namespace $ {
 //# sourceMappingURL=demo.view.tree.d.ts.map
 declare namespace $.$$ {
     class $bog_selection_demo extends $.$bog_selection_demo {
+        hotkey(): "Cmd+A" | "Ctrl+A";
+        hint_text(): string;
         article(): string;
         row_count(): number;
         rows(): $.$mol_paragraph[];

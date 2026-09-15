@@ -10495,9 +10495,12 @@ var $;
 
 ;
 	($.$bog_selection_demo) = class $bog_selection_demo extends ($.$mol_page) {
+		hint_text(){
+			return "";
+		}
 		Hint(){
 			const obj = new this.$.$mol_paragraph();
-			(obj.title) = () => ("Поставь каретку в текст или в список и нажми Ctrl+A. Вместо выделения в буфер уйдёт исходник хозяина: markdown у текста, все строки у списка, даже те, что ещё не отрисованы.");
+			(obj.title) = () => ((this.hint_text()));
 			return obj;
 		}
 		article(){
@@ -10582,6 +10585,13 @@ var $;
     var $$;
     (function ($$) {
         class $bog_selection_demo extends $.$bog_selection_demo {
+            hotkey() {
+                const mac = /Mac|iPhone|iPad/.test(this.$.$mol_dom_context.navigator.platform);
+                return mac ? 'Cmd+A' : 'Ctrl+A';
+            }
+            hint_text() {
+                return `Поставь каретку в текст или в список и нажми ${this.hotkey()}. Вместо выделения в буфер уйдёт исходник хозяина: markdown у текста, все строки у списка, даже те, что ещё не отрисованы.`;
+            }
             article() {
                 return [
                     '# Заголовок',
