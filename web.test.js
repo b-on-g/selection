@@ -2446,6 +2446,43 @@ var $;
     __decorate([
         $mol_mem
     ], $bog_selection_test_host.prototype, "Selection", null);
+    class $bog_selection_test_leaf extends $mol_view {
+        text() {
+            return '';
+        }
+    }
+    class $bog_selection_test_root extends $mol_view {
+        Leaf() {
+            return $bog_selection_test_leaf.make({ $: this.$, sub: () => ['leaf'], text: () => 'leaf source' });
+        }
+        More() {
+            return $bog_selection_test_leaf.make({ $: this.$, sub: () => ['more'], text: () => 'more source' });
+        }
+        Plain() {
+            return $mol_view.make({ $: this.$, sub: () => ['plain'] });
+        }
+        sub() {
+            return [this.Leaf(), this.More(), this.Plain()];
+        }
+        Selection() {
+            return $bog_selection.make({ $: this.$ });
+        }
+        plugins() {
+            return [this.Selection()];
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $bog_selection_test_root.prototype, "Leaf", null);
+    __decorate([
+        $mol_mem
+    ], $bog_selection_test_root.prototype, "More", null);
+    __decorate([
+        $mol_mem
+    ], $bog_selection_test_root.prototype, "Plain", null);
+    __decorate([
+        $mol_mem
+    ], $bog_selection_test_root.prototype, "Selection", null);
     $mol_test({
         'Ctrl+A around the caret copies the owner source text'($) {
             const doc = $.$mol_dom_context.document;
@@ -2459,6 +2496,7 @@ var $;
             const row = () => [$mol_view.make({ $, sub: () => ['row'] })];
             const host = $bog_selection_test_host.make({ $, rows: row, text: () => 'source' });
             const empty = $bog_selection_test_host.make({ $, rows: row });
+            const root = $bog_selection_test_root.make({ $ });
             const outside = doc.createElement('p');
             outside.textContent = 'outside';
             const press = () => {
@@ -2476,17 +2514,31 @@ var $;
             try {
                 doc.body.appendChild(host.dom_tree());
                 doc.body.appendChild(empty.dom_tree());
+                doc.body.appendChild(root.dom_tree());
                 doc.body.appendChild(outside);
                 doc.getSelection().collapse(outside.firstChild, 0);
                 $mol_assert_equal(press(), false);
                 doc.getSelection().collapse(host.dom_node().firstChild, 0);
                 $mol_assert_equal(press(), true);
                 $mol_assert_equal(written, ['source']);
+                $mol_assert_equal(doc.getSelection().anchorNode, host.dom_node());
                 doc.getSelection().collapse(empty.dom_node().firstChild, 0);
                 $mol_assert_equal(press(), false);
                 $mol_assert_equal(written, ['source']);
+                doc.getSelection().collapse(root.Leaf().dom_node().firstChild, 0);
+                $mol_assert_equal(press(), true);
+                $mol_assert_equal(written, ['source', 'leaf source']);
+                $mol_assert_equal(doc.getSelection().anchorNode, root.Leaf().dom_node());
+                doc.getSelection().collapse(root.Plain().dom_node().firstChild, 0);
+                $mol_assert_equal(press(), true);
+                $mol_assert_equal(written, ['source', 'leaf source', 'leaf source\n\nmore source']);
+                $mol_assert_equal(doc.getSelection().anchorNode, root.dom_node());
                 doc.getSelection().selectAllChildren(host.dom_node());
                 $mol_assert_equal(copy(), 'source');
+                doc.getSelection().selectAllChildren(root.Leaf().dom_node());
+                $mol_assert_equal(copy(), 'leaf source');
+                doc.getSelection().selectAllChildren(root.dom_node());
+                $mol_assert_equal(copy(), 'leaf source\n\nmore source');
                 doc.getSelection().collapse(host.dom_node().firstChild, 0);
                 $mol_assert_equal(copy(), null);
             }
@@ -2494,9 +2546,11 @@ var $;
                 doc.getSelection().removeAllRanges();
                 host.dom_node().remove();
                 empty.dom_node().remove();
+                root.dom_node().remove();
                 outside.remove();
                 host.destructor();
                 empty.destructor();
+                root.destructor();
                 if (clipboard)
                     Object.defineProperty(navigator, 'clipboard', clipboard);
                 else
