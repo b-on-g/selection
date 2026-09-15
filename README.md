@@ -3,14 +3,13 @@
 Плагин: Ctrl+A (на маке Cmd+A) внутри хозяина кладёт в буфер его исходный текст, а не выделяет отрисованное.
 
 ```tree
-<= Article $mol_text
-	text <= article \
+$my_article $mol_text
 	plugins /
-		<= Article_selection $bog_selection
-			text <= article
+		<= Selection $bog_selection
+			text <= text
 ```
 
-Плагин объявляется в дереве того компонента, чей узел он охраняет: у `$mol_plugin` хозяин — это owner, а не тот, в чьём `plugins /` он лежит. Строка `<= Selection $bog_selection` внутри `plugins /` чужого под-вида повесит плагин на родителя.
+Плагин объявляется в дереве того компонента, чей узел он охраняет: у `$mol_plugin` хозяин — это owner, а не тот, в чьём `plugins /` он лежит. Строка `<= Selection $bog_selection` внутри `plugins /` чужого под-вида из дерева родителя повесит плагин на родителя.
 
 `text` — то, что уйдёт в буфер. Пустой текст — плагин не вмешивается, Ctrl+A работает как обычно.
 
