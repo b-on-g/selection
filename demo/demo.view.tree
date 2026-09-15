@@ -2,7 +2,7 @@ $bog_selection_demo $mol_page
 	title \$bog_selection
 	body /
 		<= Hint $mol_paragraph
-			title \Поставь каретку в текст или в список и нажми Ctrl+A. Вместо выделения в буфер уйдёт исходник хозяина: markdown у текста, все строки у списка, даже те, что ещё не отрисованы.
+			title <= hint_text \
 		<= Article $mol_text
 			text <= article \
 			plugins /
