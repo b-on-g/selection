@@ -22,6 +22,7 @@ namespace $ {
 			const plugin = this.plugin()
 			if( !plugin?.text() ) return
 			event.preventDefault()
+			plugin.select()
 			plugin.copy()
 		}
 
@@ -39,6 +40,10 @@ namespace $ {
 		override auto() {
 			$bog_selection.listener()
 			$bog_selection.hosts.set( this.dom_node(), this )
+		}
+
+		select() {
+			this.$.$mol_dom_context.document.getSelection()?.selectAllChildren( this.dom_node() )
 		}
 
 		copy() {
