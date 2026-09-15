@@ -1,9 +1,11 @@
 $bog_selection_demo $mol_page
 	title \$bog_selection
+	plugins /
+		<= Selection $bog_selection
 	body /
 		<= Hint $mol_paragraph
 			title <= hint_text \
-		<= Article $bog_selection_demo_text
+		<= Article $mol_text
 			text <= article \
 		<= List $bog_selection_demo_list
 			rows <= rows /
@@ -14,13 +16,5 @@ $bog_selection_demo $mol_page
 	Row* $mol_paragraph
 		title <= row_title* \
 
-$bog_selection_demo_text $mol_text
-	plugins /
-		<= Selection $bog_selection
-			text <= text
-
 $bog_selection_demo_list $mol_list
 	text \
-	plugins /
-		<= Selection $bog_selection
-			text <= text
