@@ -42,6 +42,14 @@ namespace $ {
 				return event.defaultPrevented
 			}
 
+			const copy = ()=> {
+				let data = null as string | null
+				const event = new $.$mol_dom_context.Event( 'copy', { bubbles: true, cancelable: true } )
+				Object.defineProperty( event, 'clipboardData', { value: { setData: ( type: string, text: string )=> { data = text } } } )
+				doc.dispatchEvent( event )
+				return data
+			}
+
 			try {
 
 				doc.body.appendChild( host.dom_tree() )
@@ -58,6 +66,12 @@ namespace $ {
 				doc.getSelection()!.collapse( empty.dom_node().firstChild, 0 )
 				$mol_assert_equal( press(), false )
 				$mol_assert_equal( written, [ 'source' ] )
+
+				doc.getSelection()!.selectAllChildren( host.dom_node() )
+				$mol_assert_equal( copy(), 'source' )
+
+				doc.getSelection()!.collapse( host.dom_node().firstChild, 0 )
+				$mol_assert_equal( copy(), null )
 
 			} finally {
 

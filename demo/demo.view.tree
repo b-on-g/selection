@@ -3,18 +3,24 @@ $bog_selection_demo $mol_page
 	body /
 		<= Hint $mol_paragraph
 			title <= hint_text \
-		<= Article $mol_text
+		<= Article $bog_selection_demo_text
 			text <= article \
-			plugins /
-				<= Article_selection $bog_selection
-					text <= article
-		<= List $mol_list
+		<= List $bog_selection_demo_list
 			rows <= rows /
-			plugins /
-				<= List_selection $bog_selection
-					text <= list_text \
+			text <= list_text \
 		<= Paste $mol_textarea
 			hint \Вставь сюда, чтобы проверить буфер
 			value? <=> paste? \
 	Row* $mol_paragraph
 		title <= row_title* \
+
+$bog_selection_demo_text $mol_text
+	plugins /
+		<= Selection $bog_selection
+			text <= text
+
+$bog_selection_demo_list $mol_list
+	text \
+	plugins /
+		<= Selection $bog_selection
+			text <= text
