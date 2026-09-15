@@ -52,7 +52,8 @@ namespace $ {
 		}
 
 		static target( anchor: Element | null | undefined ) {
-			const host = anchor?.closest( '[bog_selection]' )
+			if( !anchor ) return null
+			const host = anchor.closest( '[bog_selection]' )
 			const plugin = host && this.hosts.get( host )
 			return plugin?.target( anchor ) ?? null
 		}
@@ -70,10 +71,22 @@ namespace $ {
 			return null
 		}
 
+		static texts( view: $mol_view ): string[] {
+			const text = ( view as { text?: ()=> unknown } ).text?.()
+			if( typeof text === 'string' ) return text ? [ text ] : []
+			return view.sub().flatMap( sub => sub instanceof $mol_view ? this.texts( sub ) : [] )
+		}
+
 		target( anchor: Element ) {
 			const text = this.text()
 			if( text ) return { node: this.dom_node(), text }
-			return $bog_selection.found( this.owner(), anchor )
+			const owner = this.owner()
+			return $bog_selection.found( owner, anchor ) ?? this.whole( owner )
+		}
+
+		whole( owner: $mol_view ) {
+			const text = $bog_selection.texts( owner ).join( '\n\n' )
+			return text ? { node: owner.dom_node(), text } : null
 		}
 
 		owner() {

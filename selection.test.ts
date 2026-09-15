@@ -33,12 +33,17 @@ namespace $ {
 		}
 
 		@ $mol_mem
+		More() {
+			return $bog_selection_test_leaf.make({ $: this.$, sub: ()=> [ 'more' ], text: ()=> 'more source' })
+		}
+
+		@ $mol_mem
 		Plain() {
 			return $mol_view.make({ $: this.$, sub: ()=> [ 'plain' ] })
 		}
 
 		override sub() {
-			return [ this.Leaf(), this.Plain() ]
+			return [ this.Leaf(), this.More(), this.Plain() ]
 		}
 
 		@ $mol_mem
@@ -111,14 +116,18 @@ namespace $ {
 				$mol_assert_equal( doc.getSelection()!.anchorNode, root.Leaf().dom_node() )
 
 				doc.getSelection()!.collapse( root.Plain().dom_node().firstChild, 0 )
-				$mol_assert_equal( press(), false )
-				$mol_assert_equal( written, [ 'source', 'leaf source' ] )
+				$mol_assert_equal( press(), true )
+				$mol_assert_equal( written, [ 'source', 'leaf source', 'leaf source\n\nmore source' ] )
+				$mol_assert_equal( doc.getSelection()!.anchorNode, root.dom_node() )
 
 				doc.getSelection()!.selectAllChildren( host.dom_node() )
 				$mol_assert_equal( copy(), 'source' )
 
 				doc.getSelection()!.selectAllChildren( root.Leaf().dom_node() )
 				$mol_assert_equal( copy(), 'leaf source' )
+
+				doc.getSelection()!.selectAllChildren( root.dom_node() )
+				$mol_assert_equal( copy(), 'leaf source\n\nmore source' )
 
 				doc.getSelection()!.collapse( host.dom_node().firstChild, 0 )
 				$mol_assert_equal( copy(), null )
