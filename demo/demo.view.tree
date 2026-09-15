@@ -1,0 +1,20 @@
+$bog_selection_demo $mol_page
+	title \$bog_selection
+	body /
+		<= Hint $mol_paragraph
+			title \Поставь каретку в текст или в список и нажми Ctrl+A. Вместо выделения в буфер уйдёт исходник хозяина: markdown у текста, все строки у списка, даже те, что ещё не отрисованы.
+		<= Article $mol_text
+			text <= article \
+			plugins /
+				<= Article_selection $bog_selection
+					text <= article
+		<= List $mol_list
+			rows <= rows /
+			plugins /
+				<= List_selection $bog_selection
+					text <= list_text \
+		<= Paste $mol_textarea
+			hint \Вставь сюда, чтобы проверить буфер
+			value? <=> paste? \
+	Row* $mol_paragraph
+		title <= row_title* \
